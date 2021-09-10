@@ -11,11 +11,23 @@ from api.models import db
 from api.routes import api
 from api.admin import setup_admin
 #from models import Person
+from flask_jwt_extended import JWTManager
+from flask_mail import Mail
 
 ENV = os.getenv("FLASK_ENV")
 static_file_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), '../public/')
 app = Flask(__name__)
 app.url_map.strict_slashes = False
+
+#email config
+app.config['SECRET_KEY'] = 'top-secret!'
+app.config['MAIL_SERVER'] = 'smtp.sendgrid.net'
+app.config['MAIL_PORT'] = 587
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USERNAME'] = 'apikey'
+app.config['MAIL_PASSWORD'] = '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'
+app.config['MAIL_DEFAULT_SENDER'] = 'bryan_2904@hotmail.com'
+mail = Mail(app)
 
 # database condiguration
 if os.getenv("DATABASE_URL") is not None:
@@ -26,6 +38,10 @@ else:
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 MIGRATE = Migrate(app, db)
 db.init_app(app)
+
+#add JTW
+app.config["JWT_SECRET_KEY"] = "pepito-perez"  # Change this!
+jwt = JWTManager(app)
 
 # Allow CORS requests to this API
 CORS(app)
